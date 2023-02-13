@@ -1,0 +1,50 @@
+import tensorflow as tf
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+public class Vis_Aids:
+
+# Load data
+data = pd.read_csv('data.csv')
+
+# Drop missing values
+data = data.dropna()
+
+# Normalize data
+data = (data - data.mean()) / data.std()
+
+# Split data into features and target
+features = data.drop('target', axis=1)
+target = data['target']
+
+# Convert data to numpy arrays
+features = features.values
+target = target.values
+
+# Split data into training and testing sets
+train_features = features[:int(0.8 * features.shape[0])]
+train_target = target[:int(0.8 * target.shape[0])]
+test_features = features[int(0.8 * features.shape[0]):]
+test_target = target[int(0.8 * target.shape[0]):]
+
+# Define model
+model = tf.keras.models.Sequential()
+model.add(tf.keras.layers.Dense(64, activation='relu', input_shape=(train_features.shape[1],)))
+model.add(tf.keras.layers.Dense(32, activation='relu'))
+model.add(tf.keras.layers.Dense(1, activation='linear'))
+
+# Compile model
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# Train model
+history = model.fit(train_features, train_target, epochs=100, batch_size=32, validation_split=0.2)
+
+# Evaluate model
+test_loss = model.evaluate(test_features, test_target, verbose=0)
+
+# Generate chart
+input_data = ... # Load input data
+predicted_params = model.predict(input_data)
+plt.plot(input_data, predicted_params)
+plt.show()
